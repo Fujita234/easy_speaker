@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SkyWay - Room example</title>
+    <link rel="stylesheet" href="../_shared/style.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script type="text/javascript" src="js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  </head>
+  <body style="background-color: #FFCC99">
+    <div class="container">
+      <h1 class="heading">通話アプリ</h1>
+      <div class="room">
+        <div class="row">
+          <video id="js-local-stream" class="col-8"></video>
+          <div class="col-3">
+            <span id="js-room-mode"></span>ルームを探す
+            <input type="text" placeholder="Room Name" id="js-room-id"></br>
+            <button id="js-join-trigger">Join</button>
+            <button id="js-leave-trigger">Leave</button>
+            <div class="d-none">
+              <button id="js-send-trigger" d-none>Send</button>
+            </div>
+            <pre class="messages" id="js-messages"></pre>
+          </div>
+        </div>
+      </div>
+      <p class="meta" id="js-meta"></p>
+    </div>
+    <div class="container">
+      <div class="row">
+          <div class="remote-streams" id="js-remote-streams"></div>
+      </div>
+    </div>
+    <data id="join-peer" value=""></data>
+    <script src="https://cdn.webrtc.ecl.ntt.com/skyway-latest.js"></script>
+    <script src="../_shared/key.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
