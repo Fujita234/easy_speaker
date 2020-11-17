@@ -1,17 +1,14 @@
 const Peer = window.Peer;
 
 (async function main() {
+  const joinTrigger = document.getElementById('js-join-trigger');  
   const localVideo = document.getElementById('js-local-stream');
-  const joinTrigger = document.getElementById('js-join-trigger');
+  const localText = document.getElementById('js-local-text');
   const leaveTrigger = document.getElementById('js-leave-trigger');
+  const messages = document.getElementById('js-messages');  
   const remoteVideos = document.getElementById('js-remote-streams');
   const roomId = document.getElementById('js-room-id');
-  const roomMode = document.getElementById('js-room-mode');
-  const localText = document.getElementById('js-local-text');
   const sendTrigger = document.getElementById('js-send-trigger');
-  const messages = document.getElementById('js-messages');
-  const meta = document.getElementById('js-meta');
-  const sdkSrc = document.querySelector('script[src*=skyway]');
   let myPeerId = null;
     
   const localStream = await navigator.mediaDevices
@@ -21,22 +18,20 @@ const Peer = window.Peer;
     })
     .catch(console.error);
 
-  // Render local stream
+  // localStream作成
   localVideo.muted = true;
   localVideo.srcObject = localStream;
   localVideo.playsInline = true;
   await localVideo.play().catch(console.error);
 
-  // eslint-disable-next-line require-atomic-updates
+  // API key配置
   const peer = (window.peer = new Peer({
     key: '',
     debug: 3,
   }));
 
-  // Register join handler
+  // join handlerを作成
   joinTrigger.addEventListener('click', () => {
-    // Note that you need to ensure the peer has connected to signaling server
-    // before using methods of peer instance.
     if (!peer.open) {
       return;
     }
@@ -54,7 +49,7 @@ const Peer = window.Peer;
       messages.textContent += `=== ${peerId} joined ===\n`;
     });
 
-    // Render remote stream for new peer join in the room
+    // 入室中の部屋に新しくユーザがきた時にユーザのカメラをセット
     room.on('stream', async stream => {
       const newVideo = document.createElement('video');
       newVideo.srcObject = stream;
@@ -89,7 +84,7 @@ const Peer = window.Peer;
     });
 
     room.on('data', ({ data, src }) => {
-      // Show a message sent to the room and who sent
+      // メッセージを通話相手に送信
       let ok = false;
       if (myPeerId == data.user) {
         ok = window.confirm(src + "さんが貴方に用があるようです。");
@@ -148,7 +143,7 @@ const Peer = window.Peer;
       }
     });
 
-    // for closing room members
+    // ルームメンバーが退出する際の処理
     room.on('peerLeave', peerId => {
       const remoteVideo = remoteVideos.querySelector(
         `[data-peer-id=${peerId}]`
@@ -160,7 +155,7 @@ const Peer = window.Peer;
       messages.textContent += `=== ${peerId} left ===\n`;
     });
 
-    // for closing myself
+    // 自分自身が退出する際の処理
     room.once('close', () => {
       sendTrigger.removeEventListener('click', onClickSend);
       messages.textContent += '== You left ===\n';
@@ -175,7 +170,7 @@ const Peer = window.Peer;
     leaveTrigger.addEventListener('click', () => room.close(), { once: true }, console.log("aaa"));
 
     function onClickSend() {
-      // Send message to all of the peers in the room via websocket
+      // 入室した際にメッセージを全員に送る処理
       room.send(localText.value);
 
       messages.textContent += `${peer.id}: ${localText.value}\n`;
